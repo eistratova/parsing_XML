@@ -1,0 +1,50 @@
+# Загружаем архив датасета датасет
+import datetime
+
+import yadisk
+
+#from cloud_ml.storage.api import Storage
+# To retrieve application id and secret:
+# 1. Go to link: https://oauth.yandex.ru/client/new
+# 2. Choose 'Web services'
+# 3. Paste into 'Callback URI': https://oauth.yandex.ru/verification_code
+# 4. Set up permissions on yandex disk
+
+y = yadisk.YaDisk("222df4e7e505495192f2b25ef199b9d7", "be1807c400774a5c9a93cacb8c8771b9", "AQAEA7qkCUn3AAf78dDNGi5tYEXUvqO7hI5yNEI")
+# downloading contents of the remote directory into the local one
+#disk.get_dir('test-dir', 'test')
+
+print('Chek tocken:',y.check_token())
+
+# Получает общую информацию о диске
+print(y.get_disk_info())
+
+# Выводит содержимое "/some/path"
+print(list(y.listdir("D-ML/")))
+
+
+print(datetime.datetime.now())
+
+dir_source = '/D-ML/Datasets/AiFatigueDetection/Fatigue2classes_DatasetA/2classesDimoza/*.xml'
+
+
+dir_target = '/Users/ekaterina/data4repos/AIFD_XML_full'
+#dir_target = 'data2classes/4500-0-1.png'
+
+# disk.get(dir_source, dir_target)
+
+
+print("_"*80)
+print("Стартует загрузка данных из " + dir_source + " в /" + dir_target)
+
+# disk.get_dir(dir_source,dir_target )код из кода виктора
+
+
+# Загружает "file_to_upload.txt" в "/destination.txt"
+y.download(dir_source,dir_target)
+
+
+
+print("Загрузка дата-сета на локальной диск виртуальной машины завершена!")
+print("="*80)
+print(datetime.datetime.now())

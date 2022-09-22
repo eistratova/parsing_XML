@@ -1,5 +1,6 @@
 from email.utils import format_datetime
 from itertools import count
+from sys import displayhook
 import xml.etree.ElementTree as ET
 import pandas as pd
 import glob # Библиотека для получения списка файлов
@@ -21,6 +22,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
+import datetime
+from cloud_ml.storage.api import Storage
+# To retrieve application id and secret:
+# 1. Go to link: https://oauth.yandex.ru/client/new
+# 2. Choose 'Web services'
+# 3. Paste into 'Callback URI': https://oauth.yandex.ru/verification_code
+# 4. Set up permissions on yandex disk
+disk = Storage.ya_disk(application_id='222df4e7e505495192f2b25ef199b9d7', application_secret='be1807c400774a5c9a93cacb8c8771b9')
+# downloading contents of the remote directory into the local one
+#disk.get_dir('test-dir', 'test')
+
+print(datetime.datetime.now())
+
+dir_source = 'D-ML/Datasets/AiFatigueDetection/Fatigue2classes/2classesDimoza/'
+
+
+dir_target = '.'
+#dir_target = 'data2classes/4500-0-1.png'
+
+# disk.get(dir_source, dir_target)
+
+
+print("_"*80)
+print("Стартует загрузка данных из " + dir_source + " в /" + dir_target)
+
+disk.get_dir(dir_source,dir_target )
+
+print("Загрузка дата-сета на локальной диск виртуальной машины завершена!")
+print("="*80)
+print(datetime.datetime.now())
+
+import shutil
+shutil.disk_usage("data2classes")
+
+import os
+print(os.getcwd())
 
 # Обозначаем путь нахождения XML файлов 
 # path = '/Users/ekaterina/data4repos/xml'
@@ -139,7 +176,7 @@ df_1['date'] = pd.to_datetime(df_1['date'])
 
 print(df_1.head())
 
-# Округляем до часов. С помощью функции df_1['hour'] = df_1['datetime'].dt.hour получаем данные в нцжном формате INT
+# Округляем до часов. С помощью функции df_1['hour'] = df_1['datetime'].dt.hour получаем данные в нужном формате INT
 
 df_1['hour'] = df_1['datetime'].dt.hour
 print("Округление hours function:/n", df_1['hour'])
@@ -149,13 +186,6 @@ df_1.info()
 df_1['datetime'] = df_1['datetime'].dt.round('min')
 print("Округление минуты:/n", df_1['datetime'])
 
-'''
-df_1.plot()
-plt.title('распред звонков во времени')
-plt.ylabel('time')
-plt.xlabel('ccAgentID')
-plt.show()
-'''
 # Для постройки графика по распределению звонков по агентам считаем кол-во агентов
 count=df_1['ccAgentID'].value_counts()
 print("Количество звонков по каждому агенту:/n",count)
@@ -163,7 +193,7 @@ print("Количество звонков по каждому агенту:/n",
 df_1['ccAgentID'].value_counts().plot(kind='bar', label='agent count')
 plt.legend()
 plt.title('Распределение звонков ccAgentID')
-plt.show()
+#plt.show()
 #print(df_1)
 
 df.datetime = pd.to_numeric(df.datetime, errors='coerce').fillna(0).astype(np.int64)
@@ -174,22 +204,26 @@ plt.legend()
 plt.ylabel('Количество calls')
 # plt.show()
 
-#data = df_1.groupby('type')['hour'] рабочий
-#print(data.head(10))
-
 #Построение графика "Распределение звонков по часам"
 
 df_1['hour'].hist(bins=50, figsize = (15,6))
 plt.title('Распределение звонков по времени(часам)')
 plt.ylabel('Количество звонков')
 plt.xlabel('Время звонка (час)')
-plt.show()
+#plt.show()
 
 # Распределение звонков во времени
 import plotly.express as px
 df_1['hour'].plot(kind='bar', label='hour', figsize = (15,6), title = 'dispercia calls')
 plt.legend()
 plt.ylabel('dispercia calls in time')
-plt.show()
+#plt.show()
 
+#games.groupby('name')['year_of_release'].sum()
+Agent_hour_min = df_1.groupby('ccAgentID')['hour'].min()
+Agent_hour_max = df_1.groupby('ccAgentID')['hour'].max()
+print("Час начала рабочего дня/n:",Agent_hour_min)
+print("Час начала рабочего дня/n:", Agent_hour_max)
 
+duration = Agent_hour_max-Agent_hour_min
+print("Продолжительность рабочего дня агентов:",duration)
