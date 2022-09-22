@@ -35,8 +35,8 @@ dir_target = '/Users/ekaterina/data4repos/AIFD_XML_full'
 
 
 print("_"*80)
-print("Стартует загрузка данных из " + dir_source + " в /" + dir_target)
-
+print("Стартует загрузка данных из " + dir_source + " в \n" + dir_target)
+print()
 # disk.get_dir(dir_source,dir_target )код из кода виктора
 
 
