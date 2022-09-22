@@ -1,50 +1,29 @@
 # Загружаем архив датасета датасет
-import datetime
-
+import posixpath
+import os
 import yadisk
 
-#from cloud_ml.storage.api import Storage
-# To retrieve application id and secret:
-# 1. Go to link: https://oauth.yandex.ru/client/new
-# 2. Choose 'Web services'
-# 3. Paste into 'Callback URI': https://oauth.yandex.ru/verification_code
-# 4. Set up permissions on yandex disk
+def recursive_upload(y, from_dir, to_dir):
+     for root, dirs, files in os.walk(from_dir):
+         p = root.split(from_dir)[1].strip(os.path.sep)
+         dir_path = posixpath.join(to_dir, p)
 
-y = yadisk.YaDisk("222df4e7e505495192f2b25ef199b9d7", "be1807c400774a5c9a93cacb8c8771b9", "AQAEA7qkCUn3AAf78dDNGi5tYEXUvqO7hI5yNEI")
-# downloading contents of the remote directory into the local one
-#disk.get_dir('test-dir', 'test')
+         try:
+             y.mkdir(dir_path)
+         except yadisk.exceptions.PathExistsError:
+             pass
 
-print('Chek tocken:',y.check_token())
+         for file in files:
+             file_path = posixpath.join(dir_path, file)
+             p_sys = p.replace("/", os.path.sep)
+             in_path = os.path.join(from_dir, p_sys, file)
+             try:
+                 y.upload(in_path, file_path)
+             except yadisk.exceptions.PathExistsError:
+                 pass
 
-# Получает общую информацию о диске
-print(y.get_disk_info())
-
-# Выводит содержимое "/some/path"
-print(list(y.listdir("D-ML/")))
-
-
-print(datetime.datetime.now())
-
-dir_source = '/D-ML/Datasets/AiFatigueDetection/Fatigue2classes_DatasetA/2classesDimoza/*.xml'
-
-
-dir_target = '/Users/ekaterina/data4repos/AIFD_XML_full'
-#dir_target = 'data2classes/4500-0-1.png'
-
-# disk.get(dir_source, dir_target)
-
-
-print("_"*80)
-print("Стартует загрузка данных из " + dir_source + " в \n" + dir_target)
-print()
-# disk.get_dir(dir_source,dir_target )код из кода виктора
-
-
-# Загружает "file_to_upload.txt" в "/destination.txt"
-y.download(dir_source,dir_target)
-
-
-
-print("Загрузка дата-сета на локальной диск виртуальной машины завершена!")
-print("="*80)
-print(datetime.datetime.now())
+y = yadisk.YaDisk(token="AQAEA7qkCUn3AAf78dDNGi5tYEXUvqO7hI5yNEI")
+to_dir = "/Users/ekaterina/data4repos/AIFD_XML_full"
+from_dir = "/D-ML/Datasets/AiFatigueDetection/Fatigue2classes_DatasetA/2classesDimoza/*.xml"
+recursive_upload(y, from_dir, to_dir)
+print("Дата сет загружен")
