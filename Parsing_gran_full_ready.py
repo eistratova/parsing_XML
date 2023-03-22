@@ -8,6 +8,8 @@ import os
 import stat
 from os import listdir # Библиотека для получения списка файлов
 from os.path import isfile, join
+from pathlib import Path
+
 
 # text processing libraries
 import re
@@ -22,6 +24,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
+
+from librosa import get_duration  #  pip install librosa ## библ для рассчета продолжительности записи
 
 # Обозначаем путь нахождения XML файлов 
 
@@ -79,10 +83,10 @@ print()
 
 for file in list_of_files:
     # file_path=path+file  - в оригинале(у нас path прописан path = '/Users/ekaterina/github_repos/parsing_XML/xml' поэтому происходит дублирование - path+path+file - выдает ошибку. В связи с этим надо оставить file_path=file)
-    print("Директория:\n", path)
-    print('Файл:\n', file)
+    # print("Директория:\n", path)
+    # print('Файл:\n', file)
     # print('Путь к файлу:\n'+file_path)
-    print('~'*40)
+    # print('~'*40)
     tree = ET.parse(file)
     #tree = ET.parse(path+file)
     root = tree.getroot()
@@ -137,11 +141,14 @@ for file in list_of_files:
 print(df_1.tail(10))
 print('ИНФО',df_1.info())
 
+gran_for_analize = df_1.to_csv('gran_for_analize.csv')
+
 print('Кол-во записей\n',len(df_1))
 
 print('Кол-во уникальных агентов\n', len(df_1['ccAgentID'].unique()))
 
 print('Кол-во дней записи\n', len(df_1['date'].unique()))
+print('Уникальные даты\n', (df_1['date'].unique()))
 
 df_1['date'] = pd.to_datetime(df_1['date'])
 
@@ -215,3 +222,10 @@ df_gran = df_1
 df_gran.to_csv('file1.csv')
 df_gran.to_pickle('/Users/ekaterina/github_repos/FatigueDatasetAnalizeAndCleaning/data-chego-to.pkl')
  
+# Продолжительность 1 записи
+
+
+wav_dir = Path("/Users/ekaterina/data4repos/AIFD_XML_full/20220426_gran_entire_day/")
+
+res = sum(get_duration(filename=str(f)) for f in wav_dir.rglob("*.wav"))
+print(res)
